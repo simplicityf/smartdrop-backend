@@ -1,0 +1,12 @@
+{
+  "name": "smartdrop-backend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "SmartDrop API and indexing services (planned)",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "start": "node -e \"console.log('smartdrop-backend: scaffold only — implement services here.'); process.exit(0)\""
+  }
+}
