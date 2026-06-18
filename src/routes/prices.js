@@ -4,19 +4,37 @@ const logger = require('../logger');
 
 const router = express.Router();
 
+function validateAssetCode(assetCode) {
+  if (!assetCode || typeof assetCode !== 'string') return false;
+  if (assetCode.length < 1 || assetCode.length > 12) return false;
+  return /^[A-Z0-9]+$/.test(assetCode);
+}
+
+function validateIssuer(issuer) {
+  if (!issuer) return true;
+  return /^G[A-Z0-9]{55}$/.test(issuer);
+}
+
 router.get('/prices/:asset_code', async (req, res) => {
   try {
     const { asset_code } = req.params;
     const { issuer } = req.query;
 
-    if (!asset_code || asset_code.length > 12) {
+    const normalizedCode = asset_code.toUpperCase();
+
+    if (!validateAssetCode(normalizedCode)) {
       return res.status(400).json({
         error: 'Invalid asset code',
-        message: 'Asset code must be 1-12 characters',
+        message: 'Asset code must be 1-12 alphanumeric characters',
       });
     }
 
-    const normalizedCode = asset_code.toUpperCase();
+    if (!validateIssuer(issuer)) {
+      return res.status(400).json({
+        error: 'Invalid issuer',
+        message: 'Issuer must be a valid Stellar address (G...)',
+      });
+    }
 
     const priceData = await priceOracle.getPrice(normalizedCode, issuer || null);
 
@@ -43,6 +61,20 @@ router.get('/prices/:asset_code/refresh', async (req, res) => {
     const { asset_code } = req.params;
     const { issuer } = req.query;
     const normalizedCode = asset_code.toUpperCase();
+
+    if (!validateAssetCode(normalizedCode)) {
+      return res.status(400).json({
+        error: 'Invalid asset code',
+        message: 'Asset code must be 1-12 alphanumeric characters',
+      });
+    }
+
+    if (!validateIssuer(issuer)) {
+      return res.status(400).json({
+        error: 'Invalid issuer',
+        message: 'Issuer must be a valid Stellar address (G...)',
+      });
+    }
 
     const priceData = await priceOracle.fetchFreshPrice(normalizedCode, issuer || null);
 

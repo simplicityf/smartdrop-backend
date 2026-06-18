@@ -37,7 +37,7 @@ async function detectAnomaly(currentPrice, assetCode, issuer) {
   const historyKey = buildHistoryKey(assetCode, issuer);
   const history = await cache.get(historyKey);
 
-  if (!history || !history.price) {
+  if (!history || !history.price || history.price <= 0) {
     await cache.set(historyKey, { price: currentPrice, timestamp: Date.now() }, 3600);
     return false;
   }
@@ -152,7 +152,14 @@ async function fetchFreshPrice(assetCode, issuer = null) {
 
 async function refreshAllCachedPrices() {
   const redis = cache.getClient();
-  const keys = await redis.keys(`${CACHE_PREFIX}*`);
+  const keys = [];
+  let cursor = '0';
+
+  do {
+    const result = await redis.scan(cursor, 'MATCH', `${CACHE_PREFIX}*`, 'COUNT', 100);
+    cursor = result[0];
+    keys.push(...result[1]);
+  } while (cursor !== '0');
 
   const refreshPromises = keys
     .filter((key) => !key.includes(':history:'))

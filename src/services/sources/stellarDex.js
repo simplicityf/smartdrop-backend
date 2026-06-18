@@ -22,7 +22,7 @@ async function fetchPrice(assetCode, issuer) {
 
     if (!issuer || assetCode === 'XLM') {
       base = XLM_ASSET;
-      counter = { code: 'USDC', issuer: 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335AX2OBFLDTQLNUEHRGPTM6RIA' };
+      counter = { code: 'USDC', issuer: config.stellar.usdcIssuer };
     } else {
       base = { code: assetCode, issuer };
       counter = XLM_ASSET;
@@ -52,7 +52,7 @@ async function fetchPrice(assetCode, issuer) {
 
 async function getXlmUsdPrice(horizon) {
   try {
-    const usdcIssuer = 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335AX2OBFLDTQLNUEHRGPTM6RIA';
+    const usdcIssuer = config.stellar.usdcIssuer;
     const orderBook = await horizon
       .orderbook(XLM_ASSET, { code: 'USDC', issuer: usdcIssuer })
       .limit(1)

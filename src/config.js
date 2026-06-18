@@ -9,6 +9,7 @@ module.exports = {
   },
   stellar: {
     horizonUrl: process.env.STELLAR_HORIZON_URL || 'https://horizon.stellar.org',
+    usdcIssuer: process.env.USDC_ISSUER || 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335AX2OBFLDTQLNUEHRGPTM6RIA',
   },
   coingecko: {
     apiKey: process.env.COINGECKO_API_KEY || '',
